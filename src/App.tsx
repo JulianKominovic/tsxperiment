@@ -1,42 +1,56 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { greet } from "./bindings";
+import { useCallback, useState } from "react";
+import Editor from "@monaco-editor/react";
+
+import { patchAst } from "./ast/override-console";
+import { useDebounceFunction } from "./utils/hooks";
 
 function App() {
-  const [greeting, setGreeting] = useState("");
+  const [logLines, setLogLines] = useState<string[]>([]);
+  const { debounce } = useDebounceFunction(1000);
+
+  (console as any).registerLog = useCallback((...args: any[]) => {
+    const startingLine = +args.pop();
+
+    setLogLines((prev) => {
+      const lines = prev;
+
+      lines[startingLine] = lines[startingLine]
+        ? lines[startingLine] + JSON.stringify(args) + " "
+        : JSON.stringify(args) + " ";
+      return lines;
+    });
+  }, []);
   return (
-    <div className="container">
-      <h1>Welcome to Tauri!</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <h1>{greeting}</h1>
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet(
-            new FormData(e.target as HTMLFormElement).get("name") as string
-          ).then((greeting) => {
-            setGreeting(greeting);
+    <div className="container flex h-screen">
+      <Editor
+        height="100%"
+        defaultLanguage="javascript"
+        defaultValue="// some comment"
+        onChange={(code) => {
+          setLogLines(["\n", "Executing code..."]);
+          debounce(() => {
+            setLogLines([]);
+            const patchedCode = patchAst(code ?? "");
+            eval(patchedCode ?? "");
           });
         }}
-      >
-        <input id="greet-input" name="name" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
+        options={{
+          minimap: { enabled: false },
+          wordWrap: "on",
+        }}
+      />
+      <Editor
+        height="100%"
+        className="flex-grow"
+        defaultLanguage="javascript"
+        defaultValue="// some comment"
+        options={{
+          readOnly: true,
+          minimap: { enabled: false },
+          wordWrap: "on",
+        }}
+        value={logLines.slice(1).join("\n")}
+      />
     </div>
   );
 }
