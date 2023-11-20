@@ -155,17 +155,4 @@ function patch_body(body) {
     return node;
   });
 }
-
-export function guard_loops(ast: any) {
-  loop_count = 0;
-
-  estraverse.traverse(ast, {
-    enter: function (node, parent) {
-      if (node.type === "Program") {
-        node.body = patch_body(node.body);
-      } else if (node?.body?.type === "BlockStatement") {
-        node.body.body = patch_body(node.body.body);
-      }
-    },
-  });
-}
+export const _unused = {};
