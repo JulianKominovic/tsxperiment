@@ -56,3 +56,19 @@ const a = 123;
 
 //=================
 flushBuffer();
+
+
+
+
+
+/*
+
+
+fetch("https://pokeapi.co/api/v2/pokemon/ditto",{}).then(res=>res.json()).then(res=>console.log(res)).catch(err=>console.log(err))
+
+console.log(1)
+
+
+console.log({a:1,b:{f:"asijasa",ekoko:["323232"]}})
+
+*/

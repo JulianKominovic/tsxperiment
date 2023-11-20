@@ -8,7 +8,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "tauri-ts-react-vite-tailwind-extras",
+    "productName": "tsxperiment",
     "version": "0.1.0"
   },
   "tauri": {
@@ -21,6 +21,11 @@
         "message": true,
         "open": false,
         "save": false
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": ["https://**", "http://**", "https://*", "http://*"]
       }
     },
     "bundle": {
@@ -38,7 +43,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.jkominovic.tsxperiment",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

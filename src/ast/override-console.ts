@@ -7,7 +7,7 @@ import { guard_loops } from "./infinite-loop-guard";
 export function patchAst(code: string) {
   const ast = parse(code, { ecmaVersion: "latest", locations: true });
   const newAst = estraverse.replace(ast as any, {
-    leave: function (node: any, parent: any) {
+    leave: function (node: any) {
       if (
         node.type === "CallExpression" &&
         node.callee.type === "MemberExpression" &&
