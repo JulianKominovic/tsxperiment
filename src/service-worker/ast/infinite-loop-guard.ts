@@ -6,7 +6,7 @@ var window = {};
 // runtime code
 const loops = {};
 // loop guard code inspired by Codepen
-window.koduj = {
+var koduj = {
   _get_time() {
     return +new Date();
   },

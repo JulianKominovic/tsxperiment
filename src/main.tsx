@@ -1,9 +1,18 @@
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import "@radix-ui/themes/styles.css";
+// core styles are required for all packages
+import "@mantine/core/styles.css";
+import "@mantine/spotlight/styles.css";
+import "@mantine/notifications/styles.css";
 import { HttpVerb } from "@tauri-apps/api/http";
-import { Theme } from "@radix-ui/themes";
+import { MantineProvider, createTheme } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+
+const theme = createTheme({
+  primaryColor: "gray",
+  defaultRadius: "md",
+});
 
 (window as any).fetch = async (
   input: RequestInfo | URL,
@@ -25,12 +34,8 @@ import { Theme } from "@radix-ui/themes";
   return new Response(JSON.stringify(res.data) as BodyInit, res);
 };
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <Theme
-    appearance="light"
-    accentColor="purple"
-    grayColor="auto"
-    radius="large"
-  >
+  <MantineProvider theme={theme}>
+    <Notifications position="bottom-left" />
     <App />
-  </Theme>
+  </MantineProvider>
 );

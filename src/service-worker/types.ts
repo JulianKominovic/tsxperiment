@@ -5,5 +5,13 @@ export type MessageStruct =
     }
   | {
       type: "patch-ast-res";
-      data: string;
+      data: { code: string; duration: number };
+    }
+  | {
+      type: "patch-ast-infinite-loop-req";
+      data?: undefined;
+    }
+  | {
+      type: "patch-ast-infinite-loop-res";
+      data?: undefined;
     };

@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 
-import { patchAst } from "./service-worker/ast/override-console";
-import { useDebounceFunction } from "./utils/hooks";
 import NavbarComponent from "./components/Navbar";
 import { defineMonacoThemes } from "./monaco-themes/load-theme";
 import { sendWorkerMessage, worker } from "./service-worker/main-thread";
@@ -10,20 +8,21 @@ import { _unused } from "./ast-utils/runtime";
 import { MessageStruct } from "./service-worker/types";
 
 function App() {
-  const { debounce } = useDebounceFunction(1000);
   const [lines, setLines] = useState<string>("");
 
   useEffect(() => {
-    worker.onmessage = (event: MessageEvent<MessageStruct>) => {
+    worker.addEventListener("message", (event) => {
       console.log("SW MESSAGE", event);
-      const { data, type } = event.data;
+      const { type } = event.data;
       switch (type) {
-        case "patch-ast-res":
-          console.log("patch-ast-response", data);
-          setLines(data);
+        case "patch-ast-res": {
+          const { code, duration } = event.data.data;
+          console.log("patch-ast-response", code, duration);
+          setLines(code);
           break;
+        }
       }
-    };
+    });
   }, []);
 
   return (
@@ -38,17 +37,7 @@ function App() {
             defineMonacoThemes();
           }}
           onChange={(code) => {
-            // setLogLines(["\n", "Executing code..."]);
             sendWorkerMessage({ type: "patch-ast-req", data: code ?? "" });
-            /*
-            debounce(() => {
-              setLogLines([]);
-              const patchedCode = patchAst(code ?? "");
-              eval(
-                `try{${patchedCode}}catch(err){console.registerLog(err, ${logLines.length})}`
-              );
-            });
-            */
           }}
           options={{
             formatOnPaste: true,
